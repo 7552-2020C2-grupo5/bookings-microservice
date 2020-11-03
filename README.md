@@ -1,4 +1,4 @@
-# booking_microservice
+# booking-microservice
 ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/7552-2020C2-grupo5/booking_microservice?style=flat-square)
 
 Booking microservice for BookBNB
