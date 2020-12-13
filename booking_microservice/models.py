@@ -7,9 +7,9 @@ db = SQLAlchemy()
 class Booking(db.Model):  # type: ignore
     """Bookings model"""
 
-    booking_id = db.Column(db.Integer, primary_key=True)
-    tenant_id = db.Column(db.Integer)
-    room_id = db.Column(db.Integer)
-    total_price = db.Column(db.Float)
-    initial_date = db.Column(db.DateTime)
-    final_date = db.Column(db.DateTime)
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, nullable=False)
+    publication_id = db.Column(db.Integer, nullable=False)
+    total_price = db.Column(db.Float, nullable=False)
+    initial_date = db.Column(db.DateTime, nullable=False)
+    final_date = db.Column(db.DateTime, nullable=False)
