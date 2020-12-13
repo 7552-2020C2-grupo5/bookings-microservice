@@ -1,4 +1,5 @@
 """API module."""
+from datetime import datetime as dt
 from flask_restx import Api, Resource, fields, reqparse
 from booking_microservice.models import Booking, db
 from booking_microservice.utils import FilterParam
@@ -19,9 +20,7 @@ booking_model = api.model(
     'Booking',
     {
         "id": fields.Integer(
-            readonly=True,
-            required=True,
-            description="The unique identifier of the booking",
+            readonly=True, description="The unique identifier of the booking",
         ),
         "tenant_id": fields.Integer(
             required=True, description="The unique identifier of the tenant"
@@ -32,10 +31,10 @@ booking_model = api.model(
         "total_price": fields.Float(
             required=True, description="The total price of the operation",
         ),
-        "initial_date": fields.DateTime(
+        "initial_date": fields.Date(
             required=True, description="The starting date of the rental",
         ),
-        "final_date": fields.DateTime(
+        "final_date": fields.Date(
             required=True, description="The final date of the rental"
         ),
     },
@@ -77,7 +76,10 @@ class BookingListResource(Resource):
     @api.marshal_with(booking_model)
     def post(self):
         """Create a new booking"""
-        new_booking = Booking(**api.payload)
+        data = api.payload
+        data["initial_date"] = dt.fromisoformat(data["initial_date"]).date()
+        data["final_date"] = dt.fromisoformat(data["final_date"]).date()
+        new_booking = Booking(**data)
         db.session.add(new_booking)
         db.session.commit()
         return new_booking
