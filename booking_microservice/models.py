@@ -11,5 +11,5 @@ class Booking(db.Model):  # type: ignore
     tenant_id = db.Column(db.Integer, nullable=False)
     publication_id = db.Column(db.Integer, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
-    initial_date = db.Column(db.DateTime, nullable=False)
-    final_date = db.Column(db.DateTime, nullable=False)
+    initial_date = db.Column(db.Date, nullable=False)
+    final_date = db.Column(db.Date, nullable=False)
