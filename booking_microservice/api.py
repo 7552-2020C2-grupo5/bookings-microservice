@@ -37,6 +37,9 @@ booking_model = api.model(
         "final_date": fields.Date(
             required=True, description="The final date of the rental"
         ),
+        "booking_date": fields.DateTime(
+            readonly=True, description="Date the booking was created"
+        ),
     },
 )
 
