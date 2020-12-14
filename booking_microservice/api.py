@@ -68,6 +68,20 @@ bookings_parser.add_argument(
     help="minimum starting date",
     store_missing=False,
 )
+bookings_parser.add_argument(
+    "booking_date",
+    type=FilterParam(
+        "initial_date",
+        ops.eq,
+        schema="date",
+        format_="date",
+        transform=dt.fromisoformat,
+    ),
+    help="booking date",
+    store_missing=False,
+)
+
+
 # TODO: filter final date
 # TODO: filter creation date
 
