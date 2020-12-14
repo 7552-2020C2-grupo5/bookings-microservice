@@ -69,6 +69,14 @@ bookings_parser.add_argument(
     store_missing=False,
 )
 bookings_parser.add_argument(
+    "final_date",
+    type=FilterParam(
+        "final_date", ops.le, schema="date", format_="date", transform=dt.fromisoformat,
+    ),
+    help="maximum final date",
+    store_missing=False,
+)
+bookings_parser.add_argument(
     "booking_date",
     type=FilterParam(
         "initial_date",
@@ -80,10 +88,6 @@ bookings_parser.add_argument(
     help="booking date",
     store_missing=False,
 )
-
-
-# TODO: filter final date
-# TODO: filter creation date
 
 
 @api.route('/bookings')
