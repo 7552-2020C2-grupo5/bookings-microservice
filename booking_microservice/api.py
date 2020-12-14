@@ -79,7 +79,7 @@ bookings_parser.add_argument(
 bookings_parser.add_argument(
     "booking_date",
     type=FilterParam(
-        "initial_date",
+        "booking_date",
         ops.eq,
         schema="date",
         format_="date",
