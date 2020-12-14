@@ -56,7 +56,18 @@ bookings_parser.add_argument(
     help="id of publication",
     store_missing=False,
 )
-# TODO: filter initial date
+bookings_parser.add_argument(
+    "initial_date",
+    type=FilterParam(
+        "initial_date",
+        ops.ge,
+        schema="date",
+        format_="date",
+        transform=dt.fromisoformat,
+    ),
+    help="minimum starting date",
+    store_missing=False,
+)
 # TODO: filter final date
 # TODO: filter creation date
 
