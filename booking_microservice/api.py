@@ -1,10 +1,12 @@
 """API module."""
+import operator as ops
 from datetime import datetime as dt
+
 from flask_restx import Api, Resource, fields, reqparse
+
+from booking_microservice import __version__
 from booking_microservice.models import Booking, db
 from booking_microservice.utils import FilterParam
-import operator as ops
-from booking_microservice import __version__
 
 api = Api(
     prefix="/v1",
