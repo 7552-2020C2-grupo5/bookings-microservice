@@ -22,8 +22,7 @@ booking_model = api.model(
     'Booking',
     {
         "id": fields.Integer(
-            readonly=True,
-            description="The unique identifier of the booking",
+            readonly=True, description="The unique identifier of the booking",
         ),
         "tenant_id": fields.Integer(
             required=True, description="The unique identifier of the tenant"
@@ -32,12 +31,10 @@ booking_model = api.model(
             required=True, description="The unique identifier of the publication"
         ),
         "total_price": fields.Float(
-            required=True,
-            description="The total price of the operation",
+            required=True, description="The total price of the operation",
         ),
         "initial_date": fields.Date(
-            required=True,
-            description="The starting date of the rental",
+            required=True, description="The starting date of the rental",
         ),
         "final_date": fields.Date(
             required=True, description="The final date of the rental"
@@ -76,11 +73,7 @@ bookings_parser.add_argument(
 bookings_parser.add_argument(
     "final_date",
     type=FilterParam(
-        "final_date",
-        ops.le,
-        schema="date",
-        format_="date",
-        transform=dt.fromisoformat,
+        "final_date", ops.le, schema="date", format_="date", transform=dt.fromisoformat,
     ),
     help="maximum final date",
     store_missing=False,
@@ -141,4 +134,3 @@ class BookingListResource(Resource):
         db.session.add(new_booking)
         db.session.commit()
         return new_booking, 201
-
