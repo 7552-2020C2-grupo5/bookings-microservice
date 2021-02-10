@@ -1,6 +1,6 @@
 """API module."""
-import operator as ops
 from datetime import datetime as dt
+import operator as ops
 
 from flask_restx import Api, Resource, fields, reqparse
 
