@@ -19,7 +19,7 @@ services:
     booking_microservice_api:
       container_name: booking_microservice_api
       depends_on:
-        - postgres
+        - booking_microservice_postgres
       build:
         context: ../
         dockerfile: Dockerfile
