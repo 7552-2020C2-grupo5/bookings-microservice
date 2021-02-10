@@ -26,5 +26,5 @@ services:
       ports:
         - "5000:5000"
       environment:
-        - DATABASE_URL=postgres://booking_microservice:booking_microservice@postgres/booking_microservice
+        - DATABASE_URL=postgres://booking_microservice:booking_microservice@booking_microservice_postgres/booking_microservice
       entrypoint: /app/docker-compose/api-entrypoint.sh
