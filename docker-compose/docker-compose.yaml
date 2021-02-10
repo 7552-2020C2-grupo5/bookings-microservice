@@ -1,6 +1,7 @@
 version: '3.7'
 services:
-    postgres:
+    booking_microservice_postgres:
+        container_name: booking_microservice_postgres
         image: postgres:11.9
         environment:
           - POSTGRES_USER=booking_microservice
@@ -15,7 +16,7 @@ services:
             options:
                 max-size: 10m
                 max-file: "3"
-    api:
+    booking_microservice_api:
       container_name: booking_microservice_api
       depends_on:
         - postgres
