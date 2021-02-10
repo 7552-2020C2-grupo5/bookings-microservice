@@ -1,6 +1,6 @@
 """API module."""
-from datetime import datetime as dt
 import operator as ops
+from datetime import datetime as dt
 
 from flask_restx import Api, Resource, fields, reqparse
 
@@ -127,10 +127,10 @@ class BookingListResource(Resource):
             (Booking.initial_date <= final_date) & (Booking.final_date >= initial_date)
         ).all()
 
-        if len(overlapped_bookings) >= 0:
+        if len(overlapped_bookings) >= 1:
             return {"message": "The intent booking has overlapping dates"}, 412
 
         new_booking = Booking(**data)
         db.session.add(new_booking)
         db.session.commit()
-        return new_booking, 201
+        return api.marshal(new_booking, booking_model), 201
