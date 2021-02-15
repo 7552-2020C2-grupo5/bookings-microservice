@@ -152,7 +152,12 @@ bookings_parser.add_argument(
     help="blockchain_status",
     default=BlockChainStatus.CONFIRMED.value,
 )
-
+bookings_parser.add_argument(
+    "blockchain_transaction_hash",
+    type=FilterParam("blockchain_transaction_hash", ops.eq),
+    help="Hash of the transaction that inserted the booking into the blockchain",
+    store_missing=False,
+)
 
 error_model = api.model(
     "Bookings error model",
