@@ -122,9 +122,12 @@ class BookingListResource(Resource):
 
         initial_date = data["initial_date"]
         final_date = data["final_date"]
+        publication_id = data["publication_id"]
 
         overlapped_bookings = Booking.query.filter(
-            (Booking.initial_date <= final_date) & (Booking.final_date >= initial_date)
+            (Booking.initial_date <= final_date)
+            & (Booking.final_date >= initial_date)
+            & (Booking.publication_id == publication_id)
         ).all()
 
         if len(overlapped_bookings) >= 1:
