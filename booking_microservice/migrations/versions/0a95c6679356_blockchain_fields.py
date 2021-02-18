@@ -7,6 +7,7 @@ Create Date: 2021-02-14 21:07:31.461932
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 from booking_microservice.constants import BlockChainStatus
 
