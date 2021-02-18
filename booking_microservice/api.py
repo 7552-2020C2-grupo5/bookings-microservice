@@ -5,6 +5,8 @@ from datetime import datetime as dt
 from flask_restx import Api, Resource, fields, reqparse
 
 from booking_microservice import __version__
+from booking_microservice.constants import BlockChainStatus
+from booking_microservice.exceptions import BookingDoesNotExist
 from booking_microservice.models import Booking, db
 from booking_microservice.utils import FilterParam
 
@@ -18,8 +20,22 @@ api = Api(
     validate=True,
 )
 
-booking_model = api.model(
-    'Booking',
+
+@api.errorhandler
+def handle_exception(error: Exception):
+    """When an unhandled exception is raised"""
+    message = "Error: " + getattr(error, 'message', str(error))
+    return {'message': message}, getattr(error, 'code', 500)
+
+
+@api.errorhandler(BookingDoesNotExist)
+def handle_publication_does_not_exist(_error: BookingDoesNotExist):
+    """Handle non-existing booking exception."""
+    return {'message': "No booking by that id was found."}, 404
+
+
+new_booking_model = api.model(
+    'New Booking',
     {
         "id": fields.Integer(
             readonly=True, description="The unique identifier of the booking",
@@ -41,6 +57,46 @@ booking_model = api.model(
         ),
         "booking_date": fields.DateTime(
             readonly=True, description="Date the booking was created"
+        ),
+    },
+)
+
+booking_patch_model = api.model(
+    "Booking patch",
+    {
+        "blockchain_status": fields.String(
+            required=True,
+            description="The status on the blockchain",
+            enum=[x.value for x in BlockChainStatus],
+            default=BlockChainStatus.UNSET.value,
+            attribute='blockchain_status.value',
+        ),
+        "blockchain_transaction_hash": fields.String(
+            required=False, description="The hash of the transaction on the blockchain"
+        ),
+        "blockchain_id": fields.Integer(
+            required=False, description="The id on the blockchain"
+        ),
+    },
+)
+
+
+booking_model = api.inherit(
+    "Created booking",
+    new_booking_model,
+    {
+        "blockchain_status": fields.String(
+            required=True,
+            description="The status on the blockchain",
+            enum=[x.value for x in BlockChainStatus],
+            default=BlockChainStatus.UNSET.value,
+            attribute='blockchain_status.value',
+        ),
+        "blockchain_transaction_hash": fields.String(
+            required=False, description="The hash of the transaction on the blockchain"
+        ),
+        "blockchain_id": fields.Integer(
+            required=False, description="The id on the blockchain"
         ),
     },
 )
@@ -90,6 +146,18 @@ bookings_parser.add_argument(
     help="booking date",
     store_missing=False,
 )
+bookings_parser.add_argument(
+    "blockchain_status",
+    type=FilterParam("blockchain_status", ops.eq, schema=str),
+    help="blockchain_status",
+    default=BlockChainStatus.CONFIRMED.value,
+)
+bookings_parser.add_argument(
+    "blockchain_transaction_hash",
+    type=FilterParam("blockchain_transaction_hash", ops.eq),
+    help="Hash of the transaction that inserted the booking into the blockchain",
+    store_missing=False,
+)
 
 error_model = api.model(
     "Bookings error model",
@@ -111,7 +179,7 @@ class BookingListResource(Resource):
         return query.all()
 
     @api.doc('create_booking')
-    @api.expect(booking_model)
+    @api.expect(new_booking_model)
     @api.response(code=201, model=booking_model, description="Success")
     @api.response(code=412, model=error_model, description="Precondition Failed")
     def post(self):
@@ -137,3 +205,22 @@ class BookingListResource(Resource):
         db.session.add(new_booking)
         db.session.commit()
         return api.marshal(new_booking, booking_model), 201
+
+
+@api.route("/bookings/<int:booking_id>")
+class BookingResource(Resource):
+    @api.doc("patch_booking")
+    @api.expect(booking_patch_model)
+    @api.marshal_with(booking_model)
+    def patch(self, booking_id):
+        """Replace a booking by id."""
+        booking = Booking.query.filter(Booking.id == booking_id).first()
+        if booking is None:
+            raise BookingDoesNotExist
+
+        data = api.payload
+
+        booking.update_from_dict(**data)
+        db.session.merge(booking)
+        db.session.commit()
+        return booking
