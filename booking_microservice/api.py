@@ -65,7 +65,7 @@ booking_patch_model = api.model(
     "Booking patch",
     {
         "blockchain_status": fields.String(
-            required=True,
+            required=False,
             description="The status on the blockchain",
             enum=[x.value for x in BlockChainStatus],
             default=BlockChainStatus.UNSET.value,
