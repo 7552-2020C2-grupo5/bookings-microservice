@@ -177,8 +177,8 @@ class BookingListResource(Resource):
     @api.expect(bookings_parser)
     def get(self):
         """Get all bookings."""
-        query = Booking.query
         params = bookings_parser.parse_args()
+        query = Booking.query
         for _, filter_op in params.items():
             query = filter_op.apply(query, Booking)
         return query.all()
