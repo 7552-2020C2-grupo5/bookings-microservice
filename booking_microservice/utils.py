@@ -34,6 +34,8 @@ class FilterParam:
         self.val = None
         self.attribute = attribute or self.name
         self.__schema__ = {"name": name, "in": _in, "type": schema, "format": format_}
+        if default:
+            self.__schema__["default"] = default
         self.transform = transform
         self.default = default
 

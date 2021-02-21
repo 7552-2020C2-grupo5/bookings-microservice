@@ -148,14 +148,14 @@ bookings_parser.add_argument(
 )
 bookings_parser.add_argument(
     "blockchain_status",
-    type=FilterParam("blockchain_status", ops.eq, schema=str),
-    help="blockchain_status",
-    default=FilterParam(
+    type=FilterParam(
         "blockchain_status",
         ops.eq,
         schema=str,
         default=BlockChainStatus.CONFIRMED.value,
     ),
+    help="blockchain_status",
+    store_missing=True,
 )
 bookings_parser.add_argument(
     "blockchain_transaction_hash",
