@@ -150,7 +150,12 @@ bookings_parser.add_argument(
     "blockchain_status",
     type=FilterParam("blockchain_status", ops.eq, schema=str),
     help="blockchain_status",
-    default=BlockChainStatus.CONFIRMED.value,
+    default=FilterParam(
+        "blockchain_status",
+        ops.eq,
+        schema=str,
+        default=BlockChainStatus.CONFIRMED.value,
+    ),
 )
 bookings_parser.add_argument(
     "blockchain_transaction_hash",
@@ -172,8 +177,8 @@ class BookingListResource(Resource):
     @api.expect(bookings_parser)
     def get(self):
         """Get all bookings."""
-        params = bookings_parser.parse_args()
         query = Booking.query
+        params = bookings_parser.parse_args()
         for _, filter_op in params.items():
             query = filter_op.apply(query, Booking)
         return query.all()
