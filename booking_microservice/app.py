@@ -26,7 +26,7 @@ def create_app(test_db=None):
     """creates a new app instance"""
     new_app = Flask(__name__)
     new_app.config["SQLALCHEMY_DATABASE_URI"] = config.database.url(
-        default=test_db or "sqlite:///publications_microservice.db", cast=fix_dialect
+        default=test_db or "sqlite:///bookings_microservice.db", cast=fix_dialect
     )
     new_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     new_app.config["ERROR_404_HELP"] = False
