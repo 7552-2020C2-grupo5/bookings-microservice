@@ -175,6 +175,12 @@ bookings_parser.add_argument(
     help="Hash of the transaction that inserted the booking into the blockchain",
     store_missing=False,
 )
+bookings_parser.add_argument(
+    "booking_status",
+    type=FilterParam("booking_status", ops.eq, schema=str),
+    help="Booking status",
+    store_missing=False,
+)
 
 error_model = api.model(
     "Bookings error model",
