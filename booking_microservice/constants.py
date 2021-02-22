@@ -8,3 +8,9 @@ class BlockChainStatus(Enum):
     DENIED = "DENIED"
     PENDING = "PENDING"
     ERROR = "ERROR"
+
+
+class BookingStatus(Enum):
+    PENDING = "PENDING"
+    ACCEPTED = "ACCEPTED"
+    REJECTED = "REJECTED"

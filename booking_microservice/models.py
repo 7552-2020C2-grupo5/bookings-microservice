@@ -2,7 +2,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 
-from booking_microservice.constants import BlockChainStatus
+from booking_microservice.constants import BlockChainStatus, BookingStatus
 
 db = SQLAlchemy()
 
@@ -22,6 +22,9 @@ class Booking(db.Model):  # type: ignore
     )
     blockchain_transaction_hash = db.Column(db.String(512), nullable=True)
     blockchain_id = db.Column(db.Integer, nullable=True)
+    booking_status = db.Column(
+        db.Enum(BookingStatus), nullable=False, default=BookingStatus.PENDING.value
+    )
 
     def update_from_dict(self, **kwargs):
         for field, value in kwargs.items():

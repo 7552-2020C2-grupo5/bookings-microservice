@@ -5,7 +5,7 @@ from datetime import datetime as dt
 from flask_restx import Api, Resource, fields, reqparse
 
 from booking_microservice import __version__
-from booking_microservice.constants import BlockChainStatus
+from booking_microservice.constants import BlockChainStatus, BookingStatus
 from booking_microservice.exceptions import BookingDoesNotExist
 from booking_microservice.models import Booking, db
 from booking_microservice.utils import FilterParam
@@ -77,6 +77,12 @@ booking_patch_model = api.model(
         "blockchain_id": fields.Integer(
             required=False, description="The id on the blockchain"
         ),
+        "booking_status": fields.String(
+            required=True,
+            description="The status of the booking",
+            enum=[x.value for x in BookingStatus],
+            attribute="booking_status.value",
+        ),
     },
 )
 
@@ -97,6 +103,12 @@ booking_model = api.inherit(
         ),
         "blockchain_id": fields.Integer(
             required=False, description="The id on the blockchain"
+        ),
+        "booking_status": fields.String(
+            required=True,
+            description="The status of the booking",
+            enum=[x.value for x in BookingStatus],
+            attribute="booking_status.value",
         ),
     },
 )
@@ -161,6 +173,12 @@ bookings_parser.add_argument(
     "blockchain_transaction_hash",
     type=FilterParam("blockchain_transaction_hash", ops.eq),
     help="Hash of the transaction that inserted the booking into the blockchain",
+    store_missing=False,
+)
+bookings_parser.add_argument(
+    "booking_status",
+    type=FilterParam("booking_status", ops.eq, schema=str),
+    help="Booking status",
     store_missing=False,
 )
 
