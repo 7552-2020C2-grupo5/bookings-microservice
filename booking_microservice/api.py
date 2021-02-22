@@ -93,7 +93,6 @@ booking_model = api.inherit(
             required=True,
             description="The status on the blockchain",
             enum=[x.value for x in BlockChainStatus],
-            default=BlockChainStatus.PENDING.value,
             attribute='blockchain_status.value',
         ),
         "blockchain_transaction_hash": fields.String(
