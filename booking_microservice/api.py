@@ -78,7 +78,7 @@ booking_patch_model = api.model(
             required=False, description="The id on the blockchain"
         ),
         "booking_status": fields.String(
-            required=True,
+            required=False,
             description="The status of the booking",
             enum=[x.value for x in BookingStatus],
             attribute="booking_status.value",
