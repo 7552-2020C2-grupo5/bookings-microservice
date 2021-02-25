@@ -243,16 +243,4 @@ class BookingResource(Resource):
         booking.update_from_dict(**data)
         db.session.merge(booking)
         db.session.commit()
-        return
-
-    @api.doc("delete_booking")
-    @api.response(code=200, description="Successfully deleted")
-    @api.response(code=404, description="Booking not found")
-    def delete(self, booking_id):
-        """Delete a booking by id."""
-        booking = Booking.query.filter(Booking.id == booking_id).first()
-        if booking is None:
-            raise BookingDoesNotExist
-        db.session.delete(booking)
-        db.session.commit()
-        return None, 200
+        return booking
