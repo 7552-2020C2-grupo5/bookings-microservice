@@ -213,12 +213,30 @@ class BookingListResource(Resource):
         publication_id = data["publication_id"]
 
         overlapped_bookings = Booking.query.filter(
-            (Booking.initial_date <= final_date)
-            & (Booking.final_date >= initial_date)
+            (
+                (Booking.initial_date.between(initial_date, final_date))
+                | (Booking.final_date.between(initial_date, final_date))
+            )
             & (Booking.publication_id == publication_id)
+            & (
+                Booking.booking_status.in_(
+                    [BookingStatus.ACCEPTED.value, BookingStatus.PENDING.value]
+                )
+            )
+            & (
+                Booking.blockchain_status.in_(
+                    [
+                        BlockChainStatus.CONFIRMED.value,
+                        BlockChainStatus.PENDING.value,
+                        BlockChainStatus.UNSET.value,
+                    ]
+                )
+            )
         ).all()
 
         if len(overlapped_bookings) >= 1:
+            print(overlapped_bookings[0].__dict__)
+            print(data)
             return {"message": "The intent booking has overlapping dates"}, 412
 
         new_booking = Booking(**data)

@@ -3,11 +3,13 @@
 import json
 import logging
 import tempfile
+from datetime import date, timedelta
 
 # pylint:disable=redefined-outer-name,protected-access
 import pytest
 
 from booking_microservice.app import create_app
+from booking_microservice.constants import BlockChainStatus, BookingStatus
 from booking_microservice.models import db
 
 logger = logging.getLogger(__name__)
@@ -33,8 +35,8 @@ def booking():
         "tenant_id": 1,
         "publication_id": 1,
         "total_price": 10,
-        "initial_date": "2021-02-22",
-        "final_date": "2021-02-24",
+        "initial_date": "2021-02-14",
+        "final_date": "2021-02-21",
     }
 
 
@@ -96,3 +98,90 @@ def test_get_booking_patch_booking_status(client, booking):
     assert patched_booking.get("blockchain_transaction_hash") is None
     assert patched_booking.get("blockchain_id") is None
     assert patched_booking.get("booking_status") == "ACCEPTED"
+
+
+def test_no_overlapping(client, booking):
+    client.post("/v1/bookings", json=booking)
+
+    no_overlap = dict(booking)
+    no_overlap["final_date"] = (
+        date.fromisoformat(booking.get("final_date")) + timedelta(days=8)
+    ).isoformat()
+    no_overlap["initial_date"] = (
+        date.fromisoformat(booking.get("final_date")) + timedelta(days=1)
+    ).isoformat()
+
+    response = client.post("/v1/bookings", json=no_overlap)
+    assert response._status_code == 201
+
+
+def test_overlapping_end(client, booking):
+    client.post("/v1/bookings", json=booking)
+
+    overlap = dict(booking)
+    overlap["final_date"] = (
+        date.fromisoformat(booking.get("initial_date")) + timedelta(days=1)
+    ).isoformat()
+    overlap["initial_date"] = (
+        date.fromisoformat(booking.get("initial_date")) - timedelta(days=8)
+    ).isoformat()
+
+    response = client.post("/v1/bookings", json=overlap)
+    assert response._status_code == 412
+
+
+def test_overlapping_start(client, booking):
+    client.post("/v1/bookings", json=booking)
+
+    overlap = dict(booking)
+    overlap["final_date"] = (
+        date.fromisoformat(booking.get("final_date")) + timedelta(days=8)
+    ).isoformat()
+    overlap["initial_date"] = (
+        date.fromisoformat(booking.get("final_date")) - timedelta(days=1)
+    ).isoformat()
+
+    response = client.post("/v1/bookings", json=overlap)
+    assert response._status_code == 412
+
+
+def test_overlapping_start_rejected(client, booking):
+    response = client.post("/v1/bookings", json=booking)
+    booking_id = json.loads(response.data).get("id")
+
+    client.patch(
+        f"/v1/bookings/{booking_id}",
+        json={"booking_status": BookingStatus.REJECTED.value},
+    )
+
+    overlap = dict(booking)
+    overlap["final_date"] = (
+        date.fromisoformat(booking.get("final_date")) + timedelta(days=8)
+    ).isoformat()
+    overlap["initial_date"] = (
+        date.fromisoformat(booking.get("final_date")) - timedelta(days=1)
+    ).isoformat()
+
+    response = client.post("/v1/bookings", json=overlap)
+    assert response._status_code == 201
+
+
+def test_overlapping_start_blockchain_error(client, booking):
+    response = client.post("/v1/bookings", json=booking)
+    booking_id = json.loads(response.data).get("id")
+
+    client.patch(
+        f"/v1/bookings/{booking_id}",
+        json={"blockchain_status": BlockChainStatus.ERROR.value},
+    )
+
+    overlap = dict(booking)
+    overlap["final_date"] = (
+        date.fromisoformat(booking.get("final_date")) + timedelta(days=8)
+    ).isoformat()
+    overlap["initial_date"] = (
+        date.fromisoformat(booking.get("final_date")) - timedelta(days=1)
+    ).isoformat()
+
+    response = client.post("/v1/bookings", json=overlap)
+    assert response._status_code == 201
