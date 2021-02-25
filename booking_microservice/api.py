@@ -235,8 +235,6 @@ class BookingListResource(Resource):
         ).all()
 
         if len(overlapped_bookings) >= 1:
-            print(overlapped_bookings[0].__dict__)
-            print(data)
             return {"message": "The intent booking has overlapping dates"}, 412
 
         new_booking = Booking(**data)
