@@ -14,3 +14,8 @@ class BookingStatus(Enum):
     PENDING = "PENDING"
     ACCEPTED = "ACCEPTED"
     REJECTED = "REJECTED"
+
+
+DEFAULT_VERIFICATION_URL = (
+    "https://tokens-microservice.herokuapp.com/v1/tokens/verification"
+)
