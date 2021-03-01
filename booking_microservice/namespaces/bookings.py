@@ -245,3 +245,13 @@ class BookingResource(Resource):
         db.session.merge(booking)
         db.session.commit()
         return booking
+
+    @api.doc("get_booking")
+    @api.response(code=200, model=booking_model, description="Success")
+    @api.response(code=404, model=error_model, description="Booking not found")
+    def get(self, booking_id):
+        """Get a booking by id."""
+        booking = Booking.query.filter(Booking.id == booking_id).first()
+        if booking is None:
+            raise BookingDoesNotExist
+        return api.marshal(booking, booking_model), 200
