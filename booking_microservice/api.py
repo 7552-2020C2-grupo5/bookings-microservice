@@ -4,6 +4,7 @@ from flask_restx import Api
 from booking_microservice import __version__
 from booking_microservice.namespaces.bookings import api as bookings_namespace
 from booking_microservice.namespaces.metrics import api as metrics_namespace
+from booking_microservice.namespaces.token import api as token_namespace
 
 api = Api(
     prefix="/v1",
@@ -16,6 +17,7 @@ api = Api(
 )
 api.add_namespace(bookings_namespace, path='/bookings')
 api.add_namespace(metrics_namespace, path='/metrics')
+api.add_namespace(token_namespace, path='/token')
 
 
 @api.errorhandler
