@@ -6,7 +6,7 @@ import logging
 import requests
 
 from booking_microservice.cfg import config
-from booking_microservice.exceptions import ServerTokenError, UnsetServerToken
+from booking_microservice.exceptions import ServerTokenError
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -43,8 +43,7 @@ def _patch_env_vars(env_vars):
 
 def add_end_var(key, val):
     try:
-        env_vars = get_env_vars()
-        env_vars[key.upper()] = val
+        env_vars = {key.upper(): val}
         _patch_env_vars(env_vars)
     except Exception as e:
         raise ServerTokenError from e
@@ -52,10 +51,7 @@ def add_end_var(key, val):
 
 def remove_env_var(key):
     try:
-        env_vars = get_env_vars()
-        env_vars.pop(key.upper())
+        env_vars = {key.upper(): "_"}
         _patch_env_vars(env_vars)
-    except KeyError as e:
-        raise UnsetServerToken from e
     except Exception as e:
         raise ServerTokenError from e
