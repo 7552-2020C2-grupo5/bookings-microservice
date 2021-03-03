@@ -43,15 +43,13 @@ def _patch_env_vars(env_vars):
 
 def add_end_var(key, val):
     try:
-        env_vars = {key.upper(): val}
-        _patch_env_vars(env_vars)
+        _patch_env_vars({key.upper(): val})
     except Exception as e:
         raise ServerTokenError from e
 
 
 def remove_env_var(key):
     try:
-        env_vars = {key.upper(): "_"}
-        _patch_env_vars(env_vars)
+        _patch_env_vars({key.upper(): "_"})
     except Exception as e:
         raise ServerTokenError from e
