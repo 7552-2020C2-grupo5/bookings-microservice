@@ -38,7 +38,8 @@ def before_request():
     if (
         config.env(default="DEV") == "DEV"
         or request.path in excluded_paths
-        or request.method == "OPTIONS"
+        or request.method
+        in ["OPTIONS", "PATCH"]  # TODO: remove when payments has server token
     ):
         return
     bookbnb_token = request.headers.get("BookBNBAuthorization")
